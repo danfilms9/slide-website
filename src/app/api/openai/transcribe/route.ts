@@ -2,7 +2,15 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import OpenAI from "openai";
 
-const openai = new OpenAI();
+function getOpenAI() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "OPENAI_API_KEY is missing; set it in your environment to use the transcribe API."
+    );
+  }
+  return new OpenAI({ apiKey });
+}
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -16,6 +24,8 @@ export async function POST(req: Request) {
   const filePath = "tmp/input.wav";
 
   try {
+    const openai = getOpenAI();
+
     // Write the audio data to a temporary WAV file synchronously
     fs.writeFileSync(filePath, audio);
 
