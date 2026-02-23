@@ -182,31 +182,40 @@ export function IntroScreen() {
         </div>
       </HeightThenOpacityTransition>
 
-      <HeightThenOpacityTransition
-        show={showYesNoButtons || showYesOnly}
-        heightDuration={560}
-        opacityDuration={600}
-        maxHeight="56px"
+      {/* Buttons container: always reserves height so nothing shifts when buttons fade in */}
+      <div
         className="mt-6 min-w-0"
+        style={{
+          minHeight: 56,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
+        <FadeTransition
+          show={showYesNoButtons || showYesOnly}
+          duration={600}
+          fadeInOnMount
         >
-          {!showYesOnly && (
-            <SlideButton variant="ghost" onClick={handleNo}>
-              no
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            {!showYesOnly && (
+              <SlideButton variant="ghost" onClick={handleNo}>
+                no
+              </SlideButton>
+            )}
+            <SlideButton variant="primary" onClick={handleYes}>
+              yes
             </SlideButton>
-          )}
-          <SlideButton variant="primary" onClick={handleYes}>
-            yes
-          </SlideButton>
-        </div>
-      </HeightThenOpacityTransition>
+          </div>
+        </FadeTransition>
+      </div>
     </div>
   );
 }

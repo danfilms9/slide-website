@@ -155,7 +155,7 @@ export function VideoScreen() {
                 <LoadingWheel />
                 <span
                   style={{
-                    fontSize: 10,
+                    fontSize: 9,
                     fontWeight: 400,
                     color: "#6b7280",
                   }}
@@ -168,25 +168,28 @@ export function VideoScreen() {
         </div>
       </FadeTransition>
 
-      {/* Phase 3: Video (centered), then subscribe and continue with delays */}
+      {/* Phase 3: Video always centered; subscribe below (no shift); continue at bottom */}
       <FadeTransition show={showVideo} duration={FADE_MS} fadeInOnMount>
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
+            position: "absolute",
+            inset: 0,
+            padding: 24,
+            boxSizing: "border-box",
           }}
         >
+          {/* Video: always centered on screen */}
           <div
             style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
               width: 320,
               height: 180,
               borderRadius: 8,
               overflow: "hidden",
               border: "1px solid rgba(255,255,255,0.1)",
-              flexShrink: 0,
             }}
           >
             <iframe
@@ -204,9 +207,17 @@ export function VideoScreen() {
             />
           </div>
 
+          {/* Subscribe: below video, fixed position so it doesn't move the video when it appears */}
           {showSubscribe && (
             <FadeTransition show duration={FADE_MS} fadeInOnMount>
-              <div style={{ marginTop: 16 }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "calc(50% + 90px + 16px)",
+                  left: "50%",
+                  transform: "translate(-50%, 0)",
+                }}
+              >
                 <SlideButton
                   variant="primary"
                   onClick={handleSubscribe}
@@ -218,18 +229,22 @@ export function VideoScreen() {
             </FadeTransition>
           )}
 
+          {/* Continue: bottom of screen, above container padding */}
           {showContinue && (
             <FadeTransition show duration={FADE_MS} fadeInOnMount>
               <button
                 type="button"
                 onClick={handleContinue}
                 style={{
-                  marginTop: 12,
+                  position: "absolute",
+                  bottom: 24,
+                  left: "50%",
+                  transform: "translateX(-50%)",
                   background: "none",
                   border: "none",
                   padding: 0,
                   fontFamily: "system-ui, -apple-system, sans-serif",
-                  fontSize: 11,
+                  fontSize: 9,
                   fontWeight: 500,
                   color: "#333",
                   cursor: "pointer",
