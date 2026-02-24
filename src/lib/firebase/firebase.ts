@@ -101,7 +101,7 @@ const auth = new Proxy({} as Auth, {
       if (prop === "currentUser") return null;
       return undefined;
     }
-    return (a as Record<string, unknown>)[prop];
+    return (a as unknown as Record<string, unknown>)[prop];
   },
 });
 
@@ -109,7 +109,7 @@ const db = new Proxy({} as Firestore, {
   get(_, prop: string) {
     const d = getDbInstance();
     if (!d) return undefined;
-    return (d as Record<string, unknown>)[prop];
+    return (d as unknown as Record<string, unknown>)[prop];
   },
 });
 
@@ -117,7 +117,7 @@ const storage = new Proxy({} as FirebaseStorage, {
   get(_, prop: string) {
     const s = getStorageInstance();
     if (!s) return undefined;
-    return (s as Record<string, unknown>)[prop];
+    return (s as unknown as Record<string, unknown>)[prop];
   },
 });
 
