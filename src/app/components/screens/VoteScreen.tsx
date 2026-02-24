@@ -55,11 +55,12 @@ export function VoteScreen() {
   }, [userId, setScreen, setVote]);
 
   const handleOptionClick = useCallback((option: VoteOption) => {
-    if (option) setVote(option);
+    if (!option) return;
+    setVote(option);
     stopAudio();
     playOptionAudio(option);
     playbackTriggeredByClick.current = true;
-  }, []);
+  }, [setVote]);
 
   const handleOptionMouseLeave = useCallback(() => {
     if (!playbackTriggeredByClick.current) stopAudio();
