@@ -17,12 +17,14 @@ const MOBILE_END_Z = 7;
 
 const ANCHOR = new THREE.Vector3(0, 0, 0);
 
-export function CameraController({ isMobile = false }: { isMobile?: boolean }) {
+const BLACK_FADE_DELAY_MS = 800;
+
+export function CameraController({ isMobile = false, isVotePage = false }: { isMobile?: boolean; isVotePage?: boolean }) {
   const { camera } = useThree();
   const targetPos = useExperienceStore((s) => s.cameraPosition);
   const startZ = isMobile ? MOBILE_START_Z : DESKTOP_START_Z;
   const endZ = isMobile ? MOBILE_END_Z : DESKTOP_END_Z;
-  const radiusRef = useRef(startZ);
+  const radiusRef = useRef(isVotePage ? endZ : startZ);
   const thetaRef = useRef(0);
   const phiRef = useRef(0);
   const lookAtRef = useRef(new THREE.Vector3(0, 0, 0));
@@ -69,6 +71,21 @@ export function CameraController({ isMobile = false }: { isMobile?: boolean }) {
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
+
+    if (isVotePage) {
+      // /vote: camera already at final position, screen at 100%, only black overlay fades out
+      useExperienceStore.getState().setCameraPosition({ x: 0, y: 0, z: endZ });
+      useExperienceStore.getState().setCameraProgress(1);
+      useExperienceStore.getState().setInitialLoadComplete(false);
+      camera.position.set(0, 0, endZ);
+      camera.lookAt(ANCHOR);
+
+      const t = setTimeout(() => {
+        useExperienceStore.getState().setInitialLoadComplete(true);
+      }, BLACK_FADE_DELAY_MS);
+      return () => clearTimeout(t);
+    }
+
     useExperienceStore.getState().setCameraPosition({ x: 0, y: 0, z: startZ });
     radiusRef.current = startZ;
     camera.position.set(0, 0, startZ);
@@ -79,7 +96,7 @@ export function CameraController({ isMobile = false }: { isMobile?: boolean }) {
       useExperienceStore.getState().setInitialLoadComplete(true);
     }, 1000);
     return () => clearTimeout(t);
-  }, [camera, startZ, endZ]);
+  }, [camera, startZ, endZ, isVotePage]);
 
   const setCameraProgress = useExperienceStore((s) => s.setCameraProgress);
 

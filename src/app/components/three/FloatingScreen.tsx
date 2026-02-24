@@ -8,6 +8,8 @@ import { FadeTransition } from "@/app/components/ui/FadeTransition";
 import { IntroScreen } from "@/app/components/screens/IntroScreen";
 import { VideoScreen } from "@/app/components/screens/VideoScreen";
 import { VotePromptScreen } from "@/app/components/screens/VotePromptScreen";
+import { LoginScreen } from "@/app/components/screens/LoginScreen";
+import { VoteScreen } from "@/app/components/screens/VoteScreen";
 
 const DESKTOP_DISTANCE_FACTOR = 8;
 const MOBILE_DISTANCE_FACTOR = 5.5;
@@ -22,6 +24,10 @@ function ScreenContent({ screenId }: { screenId: ScreenId }) {
       return <VideoScreen />;
     case "votePrompt":
       return <VotePromptScreen />;
+    case "login":
+      return <LoginScreen />;
+    case "vote":
+      return <VoteScreen />;
     default:
       return <IntroScreen />;
   }

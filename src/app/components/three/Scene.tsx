@@ -16,9 +16,11 @@ const FOG_FAR = 60;
 function SceneContent({
   isMobile,
   portalRef,
+  isVotePage,
 }: {
   isMobile: boolean;
   portalRef: React.RefObject<HTMLDivElement | null>;
+  isVotePage: boolean;
 }) {
   return (
     <>
@@ -28,14 +30,14 @@ function SceneContent({
       <FloatingScreen portalRef={portalRef} isMobile={isMobile} />
       <ScreenOccluder />
       <Snow isMobile={isMobile} />
-      <CameraController isMobile={isMobile} />
+      <CameraController isMobile={isMobile} isVotePage={isVotePage} />
     </>
   );
 }
 
 const LOADING_DISSOLVE_MS = 1000;
 
-export function Scene() {
+export function Scene({ isVotePage = false }: { isVotePage?: boolean }) {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const portalRef = useRef<HTMLDivElement>(null);
   const initialLoadComplete = useExperienceStore((s) => s.initialLoadComplete);
@@ -78,7 +80,7 @@ export function Scene() {
           fov: 75,
         }}
       >
-        <SceneContent isMobile={isMobile} portalRef={portalRef} />
+        <SceneContent isMobile={isMobile} portalRef={portalRef} isVotePage={isVotePage} />
       </Canvas>
       {/* z-index 10: initial black loading overlay — dissolves when camera move triggers */}
       <FadeTransition

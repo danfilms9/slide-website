@@ -5,7 +5,7 @@ import { FadeTransition } from "@/app/components/ui/FadeTransition";
 import { SlideButton } from "@/app/components/ui/SlideButton";
 import { useExperienceStore } from "@/app/lib/store";
 
-const SUBTEXT_FADE_MS = 400;
+const CONTENT_FADE_MS = 400;
 const MAYBE_NEXT_TO_SECOND_MS = 3000;
 
 type VotePromptNoFlow = null | "maybe" | "second";
@@ -15,14 +15,6 @@ export function VotePromptScreen() {
   const isLoggedIn = useExperienceStore((s) => s.isLoggedIn);
 
   const [noFlow, setNoFlow] = useState<VotePromptNoFlow>(null);
-  const [showSubtext, setShowSubtext] = useState(false);
-  const [showButtons, setShowButtons] = useState(false);
-
-  useEffect(() => {
-    setShowSubtext(true);
-    const t = setTimeout(() => setShowButtons(true), SUBTEXT_FADE_MS);
-    return () => clearTimeout(t);
-  }, []);
 
   const handleYes = useCallback(() => {
     if (isLoggedIn) {
@@ -76,23 +68,27 @@ export function VotePromptScreen() {
         background: "#e5e5e5",
       }}
     >
-      <h1
-        style={{
-          fontSize: 28,
-          fontWeight: 600,
-          margin: 0,
-          textAlign: "center",
-        }}
-      >
-        Vote on the 2nd Release
-      </h1>
+      <FadeTransition show={true} duration={CONTENT_FADE_MS} fadeInOnMount>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h1
+            style={{
+              fontSize: 28,
+              fontWeight: 600,
+              margin: 0,
+              textAlign: "center",
+            }}
+          >
+            Vote on the 2nd Release
+          </h1>
 
-      <FadeTransition show={showSubtext} duration={SUBTEXT_FADE_MS} fadeInOnMount>
-        <p style={subtextStyle}>{promptContent}</p>
-      </FadeTransition>
+          <p style={subtextStyle}>{promptContent}</p>
 
-      {showButtons && (
-        <FadeTransition show duration={SUBTEXT_FADE_MS} fadeInOnMount>
           <div
             style={{
               display: "flex",
@@ -111,8 +107,8 @@ export function VotePromptScreen() {
               yes
             </SlideButton>
           </div>
-        </FadeTransition>
-      )}
+        </div>
+      </FadeTransition>
     </div>
   );
 }

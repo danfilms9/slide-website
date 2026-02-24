@@ -13,7 +13,7 @@ const WELCOME_DURATION_MS = 600;
 const LOADING_DURATION_MS = 2000;
 const FADE_MS = 400;
 const SUBSCRIBE_DELAY_MS = 10000;
-const CONTINUE_DELAY_MS = 10000;
+const CONTINUE_DELAY_MS = 3000;
 
 function LoadingWheel() {
   return (
