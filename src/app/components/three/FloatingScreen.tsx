@@ -10,6 +10,7 @@ import { VideoScreen } from "@/app/components/screens/VideoScreen";
 import { VotePromptScreen } from "@/app/components/screens/VotePromptScreen";
 import { LoginScreen } from "@/app/components/screens/LoginScreen";
 import { VoteScreen } from "@/app/components/screens/VoteScreen";
+import { VoteConfirmScreen } from "@/app/components/screens/VoteConfirmScreen";
 
 const DESKTOP_DISTANCE_FACTOR = 8;
 const MOBILE_DISTANCE_FACTOR = 5.5;
@@ -28,6 +29,8 @@ function ScreenContent({ screenId }: { screenId: ScreenId }) {
       return <LoginScreen />;
     case "vote":
       return <VoteScreen />;
+    case "voteConfirm":
+      return <VoteConfirmScreen />;
     default:
       return <IntroScreen />;
   }

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/lib/contexts/AuthContext";
+import { VotePageUserMenu } from "@/app/components/VotePageUserMenu";
 
 const Scene = dynamic(
   () =>
@@ -19,6 +20,7 @@ export function SceneLayout({ children }: { children: React.ReactNode }) {
       <main className="fixed inset-0 w-full h-full overflow-hidden">
         <Scene isVotePage={isVotePage} />
       </main>
+      <VotePageUserMenu />
       {children}
     </AuthProvider>
   );
