@@ -1,4 +1,5 @@
 import { getFirebaseReady, getDbInstance } from "./firebase/firebase";
+import type { Firestore } from "firebase/firestore";
 import {
   doc,
   setDoc,
@@ -18,7 +19,7 @@ export interface VoteDocument {
   email: string;
 }
 
-function getDb(): ReturnType<typeof getDbInstance> {
+function getDb(): Firestore {
   const instance = getDbInstance();
   if (!instance) {
     throw new Error(

@@ -162,6 +162,12 @@ export function VoteScreen() {
     ]
   );
 
+  const handleBackToDashboard = useCallback(() => {
+    setExistingVoteFromDashboard(null);
+    setPreviousScreen(null);
+    setScreen("dashboard");
+  }, [setScreen, setPreviousScreen, setExistingVoteFromDashboard]);
+
   if (checkingExisting) {
     return (
       <div
@@ -203,12 +209,6 @@ export function VoteScreen() {
       selectedVote === option ? "0 0 20px rgba(0,0,0,0.06)" : "none",
     animation: selectedVote === option ? "vote-pulse 2s ease-in-out infinite" : "none",
   });
-
-  const handleBackToDashboard = useCallback(() => {
-    setExistingVoteFromDashboard(null);
-    setPreviousScreen(null);
-    setScreen("dashboard");
-  }, [setScreen, setPreviousScreen, setExistingVoteFromDashboard]);
 
   return (
     <div
