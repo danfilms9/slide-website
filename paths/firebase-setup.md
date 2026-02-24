@@ -48,6 +48,14 @@ NEXT_PUBLIC_FIREBASE_APP_ID=
 
 ---
 
+## Vote screen: long loading or “Submission timed out”
+
+- If the vote screen shows **Loading…** for a long time or **Submit** ends with “Submission timed out”, Firebase is likely not initializing in time.
+- **Fix:** Ensure `.env.local` has all six `NEXT_PUBLIC_FIREBASE_*` variables, then **restart the dev server** (`npm run dev`). Next.js only inlines env at startup, so changes to `.env.local` require a restart.
+- If you see “Firebase init timed out” in the console, the client couldn’t get config (env not inlined or `/api/firebase-config` slow/failing). Restart after editing `.env.local` and check the Network tab for `/api/firebase-config` if the problem continues.
+
+---
+
 ## Verification
 
 - The app uses these env vars in `src/lib/firebase/firebase.ts`.

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { FadeTransition } from "@/app/components/ui/FadeTransition";
+import { useExperienceStore } from "@/app/lib/store";
 
 const HOLD_1_MS = 2000;
 const HOLD_2_MS = 3000;
@@ -16,7 +16,7 @@ type Step =
   | "done";
 
 export function VoteConfirmScreen() {
-  const router = useRouter();
+  const setScreen = useExperienceStore((s) => s.setScreen);
   const [step, setStep] = useState<Step>("vote-recorded");
 
   // After "Vote Recorded" holds 2s, fade it out
@@ -38,8 +38,12 @@ export function VoteConfirmScreen() {
 
   useEffect(() => {
     if (step !== "done") return;
-    router.push("/dashboard");
-  }, [step, router]);
+    setScreen("dashboard");
+    // This component renders inside R3F portal (no App Router context); update URL without useRouter
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", "/dashboard");
+    }
+  }, [step, setScreen]);
 
   const containerStyle: React.CSSProperties = {
     width: "100%",

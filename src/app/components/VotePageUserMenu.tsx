@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useExperienceStore } from "@/app/lib/store";
 
 export function VotePageUserMenu() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -20,7 +22,7 @@ export function VotePageUserMenu() {
     return () => window.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
-  if (pathname !== "/vote" || !user) return null;
+  if ((pathname !== "/vote" && pathname !== "/dashboard") || !user) return null;
 
   const displayLabel = user.displayName ?? "Logged in";
 
@@ -105,8 +107,11 @@ export function VotePageUserMenu() {
           <button
             type="button"
             onClick={() => {
+              useExperienceStore.getState().setScreen("intro");
+              useExperienceStore.getState().setPreviousScreen(null);
               signOut();
               setOpen(false);
+              router.replace("/");
             }}
             style={{
               display: "block",
@@ -120,7 +125,7 @@ export function VotePageUserMenu() {
               textAlign: "left",
             }}
           >
-            Log out
+            Sign Out
           </button>
         </div>
       )}

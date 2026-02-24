@@ -19,12 +19,21 @@ const ANCHOR = new THREE.Vector3(0, 0, 0);
 
 const BLACK_FADE_DELAY_MS = 800;
 
-export function CameraController({ isMobile = false, isVotePage = false }: { isMobile?: boolean; isVotePage?: boolean }) {
+export function CameraController({
+  isMobile = false,
+  isVotePage = false,
+  isDashboardPage = false,
+}: {
+  isMobile?: boolean;
+  isVotePage?: boolean;
+  isDashboardPage?: boolean;
+}) {
   const { camera } = useThree();
   const targetPos = useExperienceStore((s) => s.cameraPosition);
   const startZ = isMobile ? MOBILE_START_Z : DESKTOP_START_Z;
   const endZ = isMobile ? MOBILE_END_Z : DESKTOP_END_Z;
-  const radiusRef = useRef(isVotePage ? endZ : startZ);
+  const startAtEnd = isVotePage || isDashboardPage;
+  const radiusRef = useRef(startAtEnd ? endZ : startZ);
   const thetaRef = useRef(0);
   const phiRef = useRef(0);
   const lookAtRef = useRef(new THREE.Vector3(0, 0, 0));
@@ -72,7 +81,7 @@ export function CameraController({ isMobile = false, isVotePage = false }: { isM
     if (hasStarted.current) return;
     hasStarted.current = true;
 
-    if (isVotePage) {
+    if (startAtEnd) {
       // /vote: camera already at final position, screen at 100%, only black overlay fades out
       useExperienceStore.getState().setCameraPosition({ x: 0, y: 0, z: endZ });
       useExperienceStore.getState().setCameraProgress(1);
@@ -96,7 +105,7 @@ export function CameraController({ isMobile = false, isVotePage = false }: { isM
       useExperienceStore.getState().setInitialLoadComplete(true);
     }, 1000);
     return () => clearTimeout(t);
-  }, [camera, startZ, endZ, isVotePage]);
+  }, [camera, startZ, endZ, startAtEnd]);
 
   const setCameraProgress = useExperienceStore((s) => s.setCameraProgress);
 

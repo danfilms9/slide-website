@@ -6,6 +6,7 @@ import { Snow } from "./Snow";
 import { FloatingScreen } from "./FloatingScreen";
 import { CameraController } from "./CameraController";
 import { ScreenOccluder } from "./ScreenOccluder";
+import { SceneEffects } from "./SceneEffects";
 import { useMediaQuery } from "@/app/lib/hooks/useMediaQuery";
 import { useExperienceStore } from "@/app/lib/store";
 import { FadeTransition } from "@/app/components/ui/FadeTransition";
@@ -17,10 +18,12 @@ function SceneContent({
   isMobile,
   portalRef,
   isVotePage,
+  isDashboardPage,
 }: {
   isMobile: boolean;
   portalRef: React.RefObject<HTMLDivElement | null>;
   isVotePage: boolean;
+  isDashboardPage: boolean;
 }) {
   return (
     <>
@@ -30,14 +33,25 @@ function SceneContent({
       <FloatingScreen portalRef={portalRef} isMobile={isMobile} />
       <ScreenOccluder />
       <Snow isMobile={isMobile} />
-      <CameraController isMobile={isMobile} isVotePage={isVotePage} />
+      <SceneEffects />
+      <CameraController
+        isMobile={isMobile}
+        isVotePage={isVotePage}
+        isDashboardPage={isDashboardPage}
+      />
     </>
   );
 }
 
 const LOADING_DISSOLVE_MS = 1000;
 
-export function Scene({ isVotePage = false }: { isVotePage?: boolean }) {
+export function Scene({
+  isVotePage = false,
+  isDashboardPage = false,
+}: {
+  isVotePage?: boolean;
+  isDashboardPage?: boolean;
+}) {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const portalRef = useRef<HTMLDivElement>(null);
   const initialLoadComplete = useExperienceStore((s) => s.initialLoadComplete);
@@ -80,7 +94,12 @@ export function Scene({ isVotePage = false }: { isVotePage?: boolean }) {
           fov: 75,
         }}
       >
-        <SceneContent isMobile={isMobile} portalRef={portalRef} isVotePage={isVotePage} />
+        <SceneContent
+          isMobile={isMobile}
+          portalRef={portalRef}
+          isVotePage={isVotePage}
+          isDashboardPage={isDashboardPage}
+        />
       </Canvas>
       {/* z-index 10: initial black loading overlay — dissolves when camera move triggers */}
       <FadeTransition

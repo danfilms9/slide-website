@@ -17,14 +17,23 @@ const BASE_SIZE = 0.22;
 const OPACITY_NEAR = 15;
 const OPACITY_FAR = 125;
 
+// Screen glow: particles within this distance of the screen get a blue-white tint
+const SCREEN_GLOW_RADIUS = 5.0;
+
 const SnowPointsVertexShader = /* glsl */ `
   uniform float size;
   uniform float scale;
   uniform float farDist;
+  uniform vec3 screenPosition;
+  uniform float glowRadius;
   varying float vDistance;
+  varying float vGlow;
   void main() {
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
     vDistance = -mvPosition.z;
+    // Distance from particle to screen (world position); screen at origin
+    float distToScreen = length(position - screenPosition);
+    vGlow = 1.0 - smoothstep(0.0, glowRadius, distToScreen);
     // Cull: behind camera (vDistance < 0) or beyond opacity far (invisible)
     if (vDistance < 0.0 || vDistance > farDist) {
       gl_Position = vec4(0.0, 0.0, 2.0, 1.0);
@@ -39,15 +48,18 @@ const SnowPointsFragmentShader = /* glsl */ `
   uniform sampler2D map;
   uniform float opacity;
   uniform vec3 color;
+  uniform vec3 glowColor;
   uniform float nearDist;
   uniform float farDist;
   varying float vDistance;
+  varying float vGlow;
   void main() {
     vec4 texColor = texture2D(map, gl_PointCoord);
     float distFade = 1.0 - smoothstep(nearDist, farDist, vDistance);
     float alpha = texColor.a * opacity * distFade;
     if (alpha < 0.0001) discard;
-    gl_FragColor = vec4(color, alpha);
+    vec3 finalColor = mix(color, glowColor, vGlow * 0.7);
+    gl_FragColor = vec4(finalColor, alpha);
   }
 `;
 
@@ -111,10 +123,13 @@ export function Snow({ isMobile = false }: { isMobile?: boolean }) {
         map: { value: null as THREE.Texture | null },
         opacity: { value: 0.98 },
         color: { value: new THREE.Color("#ffffff") },
+        glowColor: { value: new THREE.Color("#ffffff") }, // white screen glow tint
         size: { value: BASE_SIZE },
         scale: { value: 3200 },
         nearDist: { value: OPACITY_NEAR },
         farDist: { value: OPACITY_FAR }, // used in vertex (cull) and fragment (opacity)
+        screenPosition: { value: new THREE.Vector3(0, 0, 0) },
+        glowRadius: { value: SCREEN_GLOW_RADIUS },
       },
       vertexShader: SnowPointsVertexShader,
       fragmentShader: SnowPointsFragmentShader,

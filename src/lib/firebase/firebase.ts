@@ -67,10 +67,22 @@ function initFirebase(): void {
   }
 }
 
+const FIREBASE_INIT_TIMEOUT_MS = 8000;
+
 /** Resolves when Firebase is ready (after env or API config load). Use in AuthContext etc. */
 export function getFirebaseReady(): Promise<void> {
   initFirebase();
-  return initPromise ?? Promise.resolve();
+  const p = initPromise ?? Promise.resolve();
+  if (initPromise) {
+    const timeout = new Promise<void>((_, reject) =>
+      setTimeout(
+        () => reject(new Error("Firebase init timed out. Restart dev server after changing .env.local, or check /api/firebase-config.")),
+        FIREBASE_INIT_TIMEOUT_MS
+      )
+    );
+    return Promise.race([p, timeout]);
+  }
+  return p;
 }
 
 function getAuthInstance(): Auth | null {
@@ -78,7 +90,7 @@ function getAuthInstance(): Auth | null {
   return authInstance;
 }
 
-function getDbInstance(): Firestore | null {
+export function getDbInstance(): Firestore | null {
   initFirebase();
   return dbInstance;
 }

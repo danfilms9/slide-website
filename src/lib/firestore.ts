@@ -1,4 +1,4 @@
-import { db } from "./firebase/firebase";
+import { getFirebaseReady, getDbInstance } from "./firebase/firebase";
 import {
   doc,
   setDoc,
@@ -18,6 +18,16 @@ export interface VoteDocument {
   email: string;
 }
 
+function getDb(): ReturnType<typeof getDbInstance> {
+  const instance = getDbInstance();
+  if (!instance) {
+    throw new Error(
+      "Firestore is not initialized. Ensure Firebase config is loaded and getFirebaseReady() has resolved."
+    );
+  }
+  return instance;
+}
+
 /**
  * Submit or overwrite the current user's vote.
  * Document ID = userId so one vote per user (overwrites if they vote again).
@@ -27,6 +37,8 @@ export async function submitVote(
   vote: VoteValue,
   email: string
 ): Promise<void> {
+  await getFirebaseReady();
+  const db = getDb();
   const voteRef = doc(db, VOTES_COLLECTION, userId);
   await setDoc(voteRef, {
     vote,
@@ -41,6 +53,8 @@ export async function submitVote(
 export async function getUserVote(
   userId: string
 ): Promise<VoteValue | null> {
+  await getFirebaseReady();
+  const db = getDb();
   const voteRef = doc(db, VOTES_COLLECTION, userId);
   const snap = await getDoc(voteRef);
   if (!snap.exists()) return null;
@@ -57,6 +71,8 @@ export async function getVoteCounts(): Promise<{
   option1: number;
   option2: number;
 }> {
+  await getFirebaseReady();
+  const db = getDb();
   const col = collection(db, VOTES_COLLECTION);
   const snapshot = await getDocs(col);
   let option1 = 0;

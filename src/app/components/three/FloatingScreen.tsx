@@ -11,6 +11,7 @@ import { VotePromptScreen } from "@/app/components/screens/VotePromptScreen";
 import { LoginScreen } from "@/app/components/screens/LoginScreen";
 import { VoteScreen } from "@/app/components/screens/VoteScreen";
 import { VoteConfirmScreen } from "@/app/components/screens/VoteConfirmScreen";
+import { DashboardScreen } from "@/app/components/screens/DashboardScreen";
 
 const DESKTOP_DISTANCE_FACTOR = 8;
 const MOBILE_DISTANCE_FACTOR = 5.5;
@@ -31,6 +32,8 @@ function ScreenContent({ screenId }: { screenId: ScreenId }) {
       return <VoteScreen />;
     case "voteConfirm":
       return <VoteConfirmScreen />;
+    case "dashboard":
+      return <DashboardScreen />;
     default:
       return <IntroScreen />;
   }
@@ -78,7 +81,12 @@ function FloatingScreenContent({
           backgroundColor: "#e5e5e5",
           border: "2px solid #444",
           borderRadius: 8,
-          boxShadow: "0 0 40px rgba(0,0,0,0.08)",
+          boxShadow: [
+            "0 0 40px rgba(0,0,0,0.08)",
+            "0 0 50px rgba(255,255,255,0.4)",
+            "0 0 80px rgba(255,255,255,0.25)",
+            "inset 0 0 60px rgba(255,255,255,0.08)",
+          ].join(", "),
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

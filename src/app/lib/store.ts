@@ -18,6 +18,10 @@ export type IntroNoFlow = null | "maybe" | "second";
 
 export interface ExperienceState {
   currentScreen: ScreenId;
+  /** When set, VideoScreen/VoteScreen show "Back" that returns to this screen */
+  previousScreen: ScreenId | null;
+  /** When opening vote from dashboard and user already voted, this is their saved vote (for "Keep vote" / "Change Vote" label) */
+  existingVoteFromDashboard: VoteOption | null;
   selectedVote: VoteOption;
   isLoggedIn: boolean;
   cameraPosition: { x: number; y: number; z: number };
@@ -29,6 +33,8 @@ export interface ExperienceState {
   introStep: IntroStep;
   introNoFlow: IntroNoFlow;
   setScreen: (screen: ScreenId) => void;
+  setPreviousScreen: (screen: ScreenId | null) => void;
+  setExistingVoteFromDashboard: (vote: VoteOption | null) => void;
   setVote: (vote: VoteOption) => void;
   setLoggedIn: (val: boolean) => void;
   setCameraPosition: (pos: { x: number; y: number; z: number }) => void;
@@ -40,6 +46,8 @@ export interface ExperienceState {
 
 export const useExperienceStore = create<ExperienceState>((set) => ({
   currentScreen: "intro",
+  previousScreen: null,
+  existingVoteFromDashboard: null,
   selectedVote: null,
   isLoggedIn: false,
   cameraPosition: { x: 0, y: 0, z: 45 },
@@ -48,6 +56,8 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   introStep: 0,
   introNoFlow: null,
   setScreen: (screen) => set({ currentScreen: screen }),
+  setPreviousScreen: (previousScreen) => set({ previousScreen }),
+  setExistingVoteFromDashboard: (existingVoteFromDashboard) => set({ existingVoteFromDashboard }),
   setVote: (selectedVote) => set({ selectedVote }),
   setLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
   setCameraPosition: (cameraPosition) => set({ cameraPosition }),

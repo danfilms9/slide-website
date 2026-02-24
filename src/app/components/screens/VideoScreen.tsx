@@ -32,21 +32,28 @@ function LoadingWheel() {
 
 export function VideoScreen() {
   const setScreen = useExperienceStore((s) => s.setScreen);
+  const previousScreen = useExperienceStore((s) => s.previousScreen);
+  const setPreviousScreen = useExperienceStore((s) => s.setPreviousScreen);
+  const showBackToDashboard = previousScreen === "dashboard";
+  const fromDashboard = showBackToDashboard;
 
-  const [showWelcome, setShowWelcome] = useState(true);
+  // When from dashboard: skip welcome/loading, show video and subscribe immediately; no continue button
+  const [showWelcome, setShowWelcome] = useState(!fromDashboard);
   const [showLoading, setShowLoading] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
-  const [showSubscribe, setShowSubscribe] = useState(false);
+  const [showVideo, setShowVideo] = useState(fromDashboard);
+  const [showSubscribe, setShowSubscribe] = useState(fromDashboard);
   const [showContinue, setShowContinue] = useState(false);
 
-  // After a short moment, show loading wheel + "loading video"
+  // After a short moment, show loading wheel + "loading video" (intro flow only)
   useEffect(() => {
+    if (fromDashboard) return;
     const t = setTimeout(() => setShowLoading(true), WELCOME_DURATION_MS);
     return () => clearTimeout(t);
-  }, []);
+  }, [fromDashboard]);
 
-  // After welcome + loading duration, fade out message and show video
+  // After welcome + loading duration, fade out message and show video (intro flow only)
   useEffect(() => {
+    if (fromDashboard) return;
     const total = WELCOME_DURATION_MS + LOADING_DURATION_MS;
     const t = setTimeout(() => {
       setShowWelcome(false);
@@ -54,21 +61,21 @@ export function VideoScreen() {
       setShowVideo(true);
     }, total);
     return () => clearTimeout(t);
-  }, []);
+  }, [fromDashboard]);
 
-  // 10s after video is visible, show subscribe button
+  // After video is visible: show subscribe (intro flow only; from dashboard it's already shown)
   useEffect(() => {
-    if (!showVideo) return;
+    if (!showVideo || fromDashboard) return;
     const t = setTimeout(() => setShowSubscribe(true), SUBSCRIBE_DELAY_MS);
     return () => clearTimeout(t);
-  }, [showVideo]);
+  }, [showVideo, fromDashboard]);
 
-  // 10s after subscribe is visible, show continue button
+  // After subscribe is visible, show continue button (intro flow only; from dashboard we use Back)
   useEffect(() => {
-    if (!showSubscribe) return;
+    if (!showSubscribe || fromDashboard) return;
     const t = setTimeout(() => setShowContinue(true), CONTINUE_DELAY_MS);
     return () => clearTimeout(t);
-  }, [showSubscribe]);
+  }, [showSubscribe, fromDashboard]);
 
   const handleSubscribe = useCallback(() => {
     if (typeof window !== "undefined") {
@@ -79,6 +86,11 @@ export function VideoScreen() {
   const handleContinue = useCallback(() => {
     setScreen("votePrompt");
   }, [setScreen]);
+
+  const handleBackToDashboard = useCallback(() => {
+    setPreviousScreen(null);
+    setScreen("dashboard");
+  }, [setScreen, setPreviousScreen]);
 
   const containerStyle: React.CSSProperties = {
     width: "100%",
@@ -97,6 +109,30 @@ export function VideoScreen() {
 
   return (
     <div style={containerStyle}>
+      {/* Back to Dashboard when opened from dashboard */}
+      {showBackToDashboard && (
+        <button
+          type="button"
+          onClick={handleBackToDashboard}
+          style={{
+            position: "absolute",
+            top: 24,
+            left: 24,
+            zIndex: 5,
+            background: "none",
+            border: "none",
+            padding: 0,
+            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontSize: 14,
+            fontWeight: 500,
+            color: "#333",
+            cursor: "pointer",
+          }}
+          className="hover:opacity-80 transition-opacity"
+        >
+          ← Back
+        </button>
+      )}
       {/* Global keyframes for spinner - inject once */}
       <style>{`
         @keyframes spin {
